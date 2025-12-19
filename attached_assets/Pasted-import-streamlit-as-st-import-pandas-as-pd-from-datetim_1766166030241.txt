@@ -1,0 +1,82 @@
+import streamlit as st
+import pandas as pd
+from datetime import datetime
+
+# 1. SETTING THE INSTAGRAM DARK VIBE
+st.set_page_config(page_title="My Personal Hub", layout="wide")
+
+# Custom CSS for Neon Pink/Purple Accents
+st.markdown("""
+    <style>
+    .stApp { background-color: #000000; color: #ffffff; }
+    [data-testid="stSidebar"] { background-color: #121212; }
+    .stButton>button { background: linear-gradient(45deg, #833AB4, #FD1D1D); color: white; border: none; border-radius: 20px; }
+    .stProgress > div > div > div > div { background-image: linear-gradient(to right, #833AB4 , #FD1D1D); }
+    h1, h2, h3 { color: #FF007A !format; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 2. NAVIGATION (5 TABS)
+menu = ["Work Dashboard", "Calendar", "Tasks", "Notes", "Journal"]
+choice = st.sidebar.radio("Navigate", menu)
+
+# 3. WORK DASHBOARD
+if choice == "Work Dashboard":
+    st.title("⚡ Work Dashboard")
+    col1, col2 = st.columns([1, 2])
+    
+    with col1:
+        st.subheader("Progress")
+        progress = st.slider("Chapter 1 Progress", 0, 100, 45)
+        st.progress(progress)
+        
+    with col2:
+        st.subheader("Syllabus Upload")
+        uploaded_file = st.file_uploader("Upload Syllabus Image", type=['png', 'jpg'])
+        if uploaded_file:
+            st.image(uploaded_file, caption="Syllabus Scanned", use_container_width=True)
+            st.success("AI detected 5 topics to complete!")
+
+# 4. CALENDAR
+elif choice == "Calendar":
+    st.title("📅 Activity Calendar")
+    d = st.date_input("Select Date", datetime.now())
+    ticked = st.checkbox("Did I work today? ✅")
+    if ticked:
+        st.balloons()
+        st.write(f"Great job! {d} is marked as productive.")
+
+# 5. TASKS (WITH SUB-TASKS)
+elif choice == "Tasks":
+    st.title("📋 Tasks & Priorities")
+    with st.expander("Chapter 1: Quantum Mechanics", expanded=True):
+        st.write("**Sub-tasks Checklist:**")
+        c1 = st.checkbox("Tutorial Watched")
+        c2 = st.checkbox("Notes Made")
+        c3 = st.checkbox("Practice Questions")
+        c4 = st.checkbox("PYQs Completed")
+        c5 = st.checkbox("Revision Done")
+        
+        # Calculate Progress
+        done = sum([c1, c2, c3, c4, c5])
+        st.write(f"Task Progress: {done}/5")
+        st.progress(done * 20)
+
+# 6. NOTES
+elif choice == "Notes":
+    st.title("📑 Note Grid")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.info("**Math Note**\nFormula for integration...")
+    with col2:
+        st.info("**History Note**\nDates of the war...")
+    with col3:
+        st.info("**Task Note**\nBuy new pens.")
+
+# 7. JOURNAL
+elif choice == "Journal":
+    st.title("💖 Daily Journal")
+    st.text_area("My Perspective today...", placeholder="How was your day?")
+    mood = st.select_slider("Mood", options=["😔", "😐", "🙂", "🤩"])
+    if st.button("Post to Feed"):
+        st.write(f"Logged: {mood} at {datetime.now().strftime('%H:%M')}")
